@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Examen de Inglés (A1 - B1)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-xl">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">English Level Diagnostic</h1>
+                    <p class="text-xs text-indigo-200">Evaluación Oficial MCER (A1 - B1)</p>
+                </div>
+            </div>
+            <div id="user-badge" class="hidden bg-indigo-700/80 px-3 py-1.5 rounded-lg text-sm font-medium border border-indigo-500/50 flex items-center space-x-2">
+                <i class="fa-regular fa-user text-indigo-300"></i>
+                <span id="display-username">Estudiante</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-grow">
+
+        <!-- PANTALLA 1: BIENVENIDA -->
+        <section id="screen-welcome" class="fade-in bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 max-w-xl mx-auto my-8">
+            <div class="text-center mb-6">
+                <div class="inline-flex bg-indigo-50 text-indigo-600 p-4 rounded-full mb-4">
+                    <i class="fa-solid fa-award text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Bienvenido al Test de Inglés</h2>
+                <p class="text-slate-500 text-sm mt-1">Determina tu nivel exacto entre A1, A2 y B1 mediante secciones de Listening, Gramática, Lectura y Speaking.</p>
+            </div>
+
+            <form id="welcome-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Nombre y Apellido</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <input type="text" id="username" required placeholder="Ej. Carlos Pérez" 
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                    </div>
+                </div>
+
+                <!-- Modulo Obligatorio de Verificación de Micrófono en Inicio -->
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                            <i class="fa-solid fa-microphone text-indigo-600 mr-1"></i> Verificación de Micrófono (Obligatorio)
+                        </span>
+                        <span id="mic-check-status" class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            No verificado
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Para habilitar la prueba oral de Speaking, debes probar y permitir el acceso al micrófono de tu dispositivo antes de iniciar.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btn-check-mic" onclick="testMicrophoneInWelcome()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-check-mic"></i>
+                            <span id="text-check-mic">Activar y Probar Micrófono</span>
+                        </button>
+                    </div>
+                    <p id="mic-test-preview" class="text-xs text-slate-600 italic bg-white p-2 rounded border border-slate-200 hidden">
+                        <!-- Transcripción de prueba -->
+                    </p>
+                </div>
+
+                <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-xl text-xs text-indigo-900 space-y-1">
+                    <p class="font-semibold"><i class="fa-solid fa-circle-info mr-1 text-indigo-600"></i> Información de la prueba:</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-slate-600 pl-1">
+                        <li>3 Audios simulados con 3 preguntas cada uno (9 preguntas en total).</li>
+                        <li>15 Preguntas de Gramática, Vocabulario y Lectura.</li>
+                        <li>3 Pruebas de Expresión Oral (Speaking) con dictado por voz y opción de edición manual.</li>
+                        <li>Puntaje total: 33 puntos. Resultados y retroalimentación integrada.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" id="btn-start-exam" disabled class="w-full bg-slate-300 text-slate-500 cursor-not-allowed font-semibold py-3 px-6 rounded-xl transition duration-200 flex items-center justify-center space-x-2">
+                    <span>Comenzar Examen</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <p id="start-disabled-note" class="text-center text-[11px] text-amber-600 font-medium">
+                    * Debes probar y activar el micrófono para desbloquear el botón de inicio.
+                </p>
+            </form>
+        </section>
+
+        <!-- PANTALLA 2: EXAMEN (LISTENING + GRAMMAR + READING + SPEAKING) -->
+        <section id="screen-exam" class="hidden fade-in space-y-8">
+            
+            <!-- Barra de progreso superior -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Evaluación Activa</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-1" id="exam-title-header">Examen Completo de Certificación MCER</h3>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <div class="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                        <span>Progreso respondido</span>
+                        <span id="progress-text">0 / 27 respondidas</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: LISTENING (3 Audios / Textos simulados) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-headphones"></i>
+                        <span>Sección 1: Comprensión Auditiva (Listening)</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Escucha el audio simulado (reproductor de voz o lectura de transcripción) y responde las preguntas asociadas.</p>
+                </div>
+
+                <!-- Audio 1 (A1) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel A1</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 1: Rutina Diaria y Presentación</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio1')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio1"></i>
+                            <span id="text-audio1">Escuchar Audio 1</span>
+                        </button>
+                    </div>
+
+                    <!-- Transcript toggle -->
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-1')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-1" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Hello! My name is Marco. I am 25 years old and I live in a small apartment in Rome. On weekdays, I get up at 7:00 AM, drink coffee, and go to work by bus. In my free time, I like playing football and reading books."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 1 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">1. Where does Marco live?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) In a big house in Milan</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) In a small apartment in Rome</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) In a farm in Italy</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">2. How does he go to work?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) By car</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) On foot</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) By bus</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">3. What does Marco like doing in his free time?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Swimming and watching TV</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Playing football and reading books</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Cooking and listening to music</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio 2 (A2) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel A2</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 2: Experiencias Pasadas y Clima</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio2')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio2"></i>
+                            <span id="text-audio2">Escuchar Audio 2</span>
+                        </button>
+                    </div>
+
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-2')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-2" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Last weekend, Sarah went to the beach with her friends. The weather was warm and sunny, so they spent most of the day swimming in the ocean. However, in the afternoon, it started raining heavily, so they decided to go to a cafe and order hot chocolate instead."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">4. Why did they leave the beach in the afternoon?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) They were tired</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) It started raining heavily</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) The cafe was closing</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">5. What did they do after leaving the beach?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) They went home</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) They drank hot chocolate at a cafe</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) They went swimming</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 6 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">6. How was the weather at the beginning of the day?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Cold and windy</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Warm and sunny</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Rainy and dark</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio 3 (B1) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel B1</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 3: Educación Online vs Tradicional</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio3')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio3"></i>
+                            <span id="text-audio3">Escuchar Audio 3</span>
+                        </button>
+                    </div>
+
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-3')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-3" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Although online learning has become increasingly popular over the last few years, many students still prefer traditional classroom environments. They argue that face-to-face interaction with teachers and classmates helps them stay motivated. On the other hand, remote courses offer flexibility for people who work full-time."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 7 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">7. According to the text, why do some students prefer traditional classrooms?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q7" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Because they are cheaper</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q7" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Because face-to-face interaction helps motivation</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q7" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Because they don't like technology</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 8 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">8. What is the main advantage of remote courses?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q8" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Flexibility for full-time workers</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q8" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Better teachers</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q8" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Less homework</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 9 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">9. What trend is mentioned about online learning in recent years?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q9" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) It has become increasingly popular</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q9" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) It has completely replaced physical schools</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q9" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) It has become less common and more expensive</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECCIÓN 2: GRAMÁTICA, VOCABULARIO Y LECTURA (Escrita) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-pen-nib"></i>
+                        <span>Sección 2: Gramática, Vocabulario y Lectura</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Selecciona la opción correcta para cada estructura gramatical y texto propuesto.</p>
+                </div>
+
+                <!-- Parte A: A1 Grammar -->
+                <div class="space-y-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-emerald-800 border border-emerald-200">
+                        Parte A: Estructuras Básicas (Nivel A1)
+                    </div>
+
+                    <!-- Q10 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">10. My sister ______ like coffee; she prefers tea.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) don't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) doesn't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) isn't</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q11 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">11. Where ______ you yesterday at 8:00 PM?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) were</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) did</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) was</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q12 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">12. There ______ three apples on the table.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) is</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) are</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) have</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q13 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">13. Look! The dog ______ in the garden right now.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) runs</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) is running</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) ran</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte B: A2 Grammar & Vocabulary -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-blue-800 border border-blue-200">
+                        Parte B: Eventos Pasados y Cotidianos (Nivel A2)
+                    </div>
+
+                    <!-- Q14 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">14. If it ______ tomorrow, we will go to the park.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) doesn't rain</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) won't rain</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) didn't rain</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q15 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">15. She has lived in this city ______ 2018.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) for</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) since</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) ago</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q16 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">16. This book is much ______ than the one we read last month.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) interesting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) more interesting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) most interesting</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q17 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">17. While I ______ dinner, the phone rang.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) cooked</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) am cooking</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) was cooking</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte C: B1 Structures -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-amber-800 border border-amber-200">
+                        Parte C: Estructuras Intermedias (Nivel B1)
+                    </div>
+
+                    <!-- Q18 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">18. I'm not used to ______ up so early in the morning.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) get</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) getting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) got</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q19 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">19. The new project ______ by the team before the deadline last week.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) was completed</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) completed</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) has completed</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q20 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">20. You ______ bring an umbrella; the sky is completely clear.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) mustn't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) don't have to</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) shouldn't to</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q21 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">21. If I had more free time, I ______ a new language.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) will learn</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) would learn</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) learned</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte D: Reading Comprehension -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-purple-800 border border-purple-200">
+                        Parte D: Comprensión Lectora (Nivel A2 - B1)
+                    </div>
+
+                    <div class="bg-indigo-50/40 p-4 rounded-xl border border-indigo-100 text-sm text-slate-700 space-y-2">
+                        <p class="font-semibold text-indigo-900">The Rise of Remote Work</p>
+                        <p>Ten years ago, commuting to an office every morning was the standard routine for most office workers. Today, flexible working models allow millions of employees to work from home or anywhere in the world.</p>
+                        <p>While this shift provides a better work-life balance and eliminates commuting time, it also introduces new challenges. For instance, many remote workers find it difficult to disconnect from work at the end of the day, leading to burnout. Furthermore, companies must find creative ways to maintain team collaboration and communication without physical contact.</p>
+                    </div>
+
+                    <!-- Q22 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">22. What is one benefit of remote work mentioned in the text?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q22" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Lower taxes</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q22" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) No commuting time</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q22" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Fewer working hours</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q23 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">23. What is a common difficulty faced by remote workers?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q23" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Working with international clients</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q23" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) Disconnecting from work at the end of the day</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q23" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Buying office equipment</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q24 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">24. What must companies do according to the final sentence?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q24" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Reduce salaries for remote workers</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q24" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) Force everyone to return to the office</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q24" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Find creative ways to foster collaboration</span></label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECCIÓN 3: SPEAKING EVALUATION MODULE (Expresión Oral) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>Sección 3: Expresión Oral (Speaking Test)</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Usa el micrófono si tu navegador lo permite. En plataformas como Google Sites, puedes responder de forma oral con tu profesor o transcribir/escribir tu respuesta directamente en los recuadros.</p>
+                </div>
+
+                <!-- Google Sites / Iframe Helper Banner -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 flex items-start space-x-3">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-semibold">Nota sobre grabación en Google Sites:</p>
+                        <p class="text-amber-800 mt-0.5">Debido a políticas de seguridad del marco de Google Sites, el botón de micrófono puede estar restringido por el navegador. Si el micrófono no activa, escribe directamente la respuesta o lee el texto a tu profesor/evaluador.</p>
+                    </div>
+                </div>
+
+                <!-- Speaking 1 (A1 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking A1</span>
+                        <span id="speaking-status-sp1" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">25. Prompt A1: "Please introduce yourself. What is your name, where are you from, and what do you like doing in your free time?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp1" onclick="toggleRecording('sp1')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp1"></i>
+                            <span id="text-rec-sp1">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp1')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp1" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp1" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Speaking 2 (A2 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking A2</span>
+                        <span id="speaking-status-sp2" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">26. Prompt A2: "Tell me about your last vacation or a memorable weekend. Where did you go and what did you do?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp2" onclick="toggleRecording('sp2')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp2"></i>
+                            <span id="text-rec-sp2">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp2" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp2" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Speaking 3 (B1 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking B1</span>
+                        <span id="speaking-status-sp3" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">27. Prompt B1: "In your opinion, is working/studying from home better than going to an office/classroom? What would you do if you could choose?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp3" onclick="toggleRecording('sp3')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp3"></i>
+                            <span id="text-rec-sp3">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp3')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp3" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp3" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Botón Calificar -->
+                <div class="pt-6 border-t border-slate-200 flex justify-end">
+                    <button type="button" onclick="submitExam()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl transition duration-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-square-check"></i>
+                        <span>Calificar Examen Completo</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- PANTALLA 3: RESULTADOS Y RETROALIMENTACIÓN -->
+        <section id="screen-results" class="hidden fade-in space-y-8 my-6">
+            
+            <!-- Tarjeta Principal de Nivel -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 text-center space-y-4">
+                <div class="inline-flex bg-indigo-50 text-indigo-600 p-4 rounded-full">
+                    <i class="fa-solid fa-medal text-4xl" id="result-icon"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Resultado Oficial para <strong id="res-username" class="text-slate-700">Estudiante</strong></span>
+                    <h2 class="text-4xl font-extrabold text-slate-900 mt-1" id="res-level-title">Nivel A2: Elemental</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 max-w-2xl mx-auto">
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Listening + Written</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-written-score">0 / 24</span>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Speaking Score</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-speaking-score">0 / 9</span>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Total Global</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-total-score">0 / 33</span>
+                    </div>
+                </div>
+                <p id="res-description" class="text-slate-600 max-w-lg mx-auto text-sm leading-relaxed">
+                    Descripción del nivel del alumno...
+                </p>
+
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: LISTENING (3 Audios / Textos simulados) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-headphones"></i>
+                        <span>Sección 1: Comprensión Auditiva (Listening)</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Escucha el audio simulado (reproductor de voz o lectura de transcripción) y responde las preguntas asociadas.</p>
+                </div>
+
+                <!-- Audio 1 (A1) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel A1</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 1: Rutina Diaria y Presentación</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio1')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio1"></i>
+                            <span id="text-audio1">Escuchar Audio 1</span>
+                        </button>
+                    </div>
+
+                    <!-- Transcript toggle -->
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-1')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-1" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Hello! My name is Marco. I am 25 years old and I live in a small apartment in Rome. On weekdays, I get up at 7:00 AM, drink coffee, and go to work by bus. In my free time, I like playing football and reading books."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 1 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">1. Where does Marco live?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) In a big house in Milan</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) In a small apartment in Rome</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q1" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) In a farm in Italy</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">2. How does he go to work?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) By car</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) On foot</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q2" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) By bus</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio 2 (A2) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel A2</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 2: Experiencias Pasadas y Clima</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio2')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio2"></i>
+                            <span id="text-audio2">Escuchar Audio 2</span>
+                        </button>
+                    </div>
+
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-2')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-2" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Last weekend, Sarah went to the beach with her friends. The weather was warm and sunny, so they spent most of the day swimming in the ocean. However, in the afternoon, it started raining heavily, so they decided to go to a cafe and order hot chocolate instead."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">3. Why did they leave the beach in the afternoon?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) They were tired</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) It started raining heavily</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q3" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) The cafe was closing</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">4. What did they do after leaving the beach?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) They went home</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) They drank hot chocolate at a cafe</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q4" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) They went swimming</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio 3 (B1) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">Nivel B1</span>
+                            <h4 class="font-bold text-slate-800 mt-1">Audio 3: Educación Online vs Tradicional</h4>
+                        </div>
+                        <button type="button" onclick="playAudioSimulation('audio3')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-play" id="icon-audio3"></i>
+                            <span id="text-audio3">Escuchar Audio 3</span>
+                        </button>
+                    </div>
+
+                    <div class="text-xs">
+                        <button type="button" onclick="toggleTranscript('trans-3')" class="text-indigo-600 hover:underline font-medium flex items-center space-x-1">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver / Ocultar Transcripción de apoyo</span>
+                        </button>
+                        <div id="trans-3" class="hidden mt-2 p-3 bg-white border border-slate-200 rounded-lg text-slate-600 italic">
+                            "Although online learning has become increasingly popular over the last few years, many students still prefer traditional classroom environments. They argue that face-to-face interaction with teachers and classmates helps them stay motivated. On the other hand, remote courses offer flexibility for people who work full-time."
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">5. According to the text, why do some students prefer traditional classrooms?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Because they are cheaper</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Because face-to-face interaction helps motivation</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q5" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Because they don't like technology</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 6 -->
+                    <div class="pt-2 border-t border-slate-200 space-y-2">
+                        <p class="text-sm font-medium text-slate-800">6. What is the main advantage of remote courses?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="a" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>a) Flexibility for full-time workers</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="b" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>b) Better teachers</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="radio" name="q6" value="c" onchange="updateProgress()" class="text-indigo-600 focus:ring-indigo-500">
+                                <span>c) Less homework</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECCIÓN 2: GRAMÁTICA, VOCABULARIO Y LECTURA (Escrita) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-pen-nib"></i>
+                        <span>Sección 2: Gramática, Vocabulario y Lectura</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Selecciona la opción correcta para cada estructura gramatical y texto propuesto.</p>
+                </div>
+
+                <!-- Parte A: A1 Grammar -->
+                <div class="space-y-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-emerald-800 border border-emerald-200">
+                        Parte A: Estructuras Básicas (Nivel A1)
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">7. My sister ______ like coffee; she prefers tea.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q7" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) don't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q7" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) doesn't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q7" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) isn't</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">8. Where ______ you yesterday at 8:00 PM?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q8" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) were</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q8" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) did</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q8" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) was</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q9 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">9. There ______ three apples on the table.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q9" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) is</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q9" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) are</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q9" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) have</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q10 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">10. Look! The dog ______ in the garden right now.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) runs</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) is running</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q10" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) ran</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte B: A2 Grammar & Vocabulary -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-blue-800 border border-blue-200">
+                        Parte B: Eventos Pasados y Cotidianos (Nivel A2)
+                    </div>
+
+                    <!-- Q11 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">11. If it ______ tomorrow, we will go to the park.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) doesn't rain</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) won't rain</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q11" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) didn't rain</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q12 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">12. She has lived in this city ______ 2018.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) for</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) since</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q12" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) ago</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q13 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">13. This book is much ______ than the one we read last month.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) interesting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) more interesting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q13" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) most interesting</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q14 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">14. While I ______ dinner, the phone rang.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) cooked</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) am cooking</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q14" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) was cooking</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte C: B1 Structures -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-amber-800 border border-amber-200">
+                        Parte C: Estructuras Intermedias (Nivel B1)
+                    </div>
+
+                    <!-- Q15 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">15. I'm not used to ______ up so early in the morning.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) get</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) getting</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q15" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) got</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q16 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">16. The new project ______ by the team before the deadline last week.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) was completed</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) completed</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q16" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) has completed</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q17 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">17. You ______ bring an umbrella; the sky is completely clear.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) mustn't</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) don't have to</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q17" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) shouldn't to</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q18 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">18. If I had more free time, I ______ a new language.</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) will learn</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) would learn</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q18" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) learned</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte D: Reading Comprehension -->
+                <div class="space-y-4 pt-4">
+                    <div class="bg-slate-50 px-3 py-1.5 rounded-lg inline-block text-xs font-semibold text-purple-800 border border-purple-200">
+                        Parte D: Comprensión Lectora (Nivel A2 - B1)
+                    </div>
+
+                    <div class="bg-indigo-50/40 p-4 rounded-xl border border-indigo-100 text-sm text-slate-700 space-y-2">
+                        <p class="font-semibold text-indigo-900">The Rise of Remote Work</p>
+                        <p>Ten years ago, commuting to an office every morning was the standard routine for most office workers. Today, flexible working models allow millions of employees to work from home or anywhere in the world.</p>
+                        <p>While this shift provides a better work-life balance and eliminates commuting time, it also introduces new challenges. For instance, many remote workers find it difficult to disconnect from work at the end of the day, leading to burnout. Furthermore, companies must find creative ways to maintain team collaboration and communication without physical contact.</p>
+                    </div>
+
+                    <!-- Q19 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">19. What is one benefit of remote work mentioned in the text?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Lower taxes</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) No commuting time</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q19" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Fewer working hours</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q20 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">20. What is a common difficulty faced by remote workers?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Working with international clients</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) Disconnecting from work at the end of the day</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q20" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Buying office equipment</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q21 -->
+                    <div class="space-y-2 p-4 bg-slate-50/50 rounded-xl border border-slate-200">
+                        <p class="text-sm font-medium text-slate-800">21. What must companies do according to the final sentence?</p>
+                        <div class="space-y-1.5 pl-2">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="a" onchange="updateProgress()" class="text-indigo-600"><span>a) Reduce salaries for remote workers</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="b" onchange="updateProgress()" class="text-indigo-600"><span>b) Force everyone to return to the office</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="radio" name="q21" value="c" onchange="updateProgress()" class="text-indigo-600"><span>c) Find creative ways to foster collaboration</span></label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECCIÓN 3: SPEAKING EVALUATION MODULE (Expresión Oral) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>Sección 3: Expresión Oral (Speaking Test)</span>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Usa el micrófono si tu navegador lo permite. En plataformas como Google Sites, puedes responder de forma oral con tu profesor o transcribir/escribir tu respuesta directamente en los recuadros.</p>
+                </div>
+
+                <!-- Google Sites / Iframe Helper Banner -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 flex items-start space-x-3">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-semibold">Nota sobre grabación en Google Sites:</p>
+                        <p class="text-amber-800 mt-0.5">Debido a políticas de seguridad del marco de Google Sites, el botón de micrófono puede estar restringido por el navegador. Si el micrófono no activa, escribe directamente la respuesta o lee el texto a tu profesor/evaluador.</p>
+                    </div>
+                </div>
+
+                <!-- Speaking 1 (A1 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking A1</span>
+                        <span id="speaking-status-sp1" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">22. Prompt A1: "Please introduce yourself. What is your name, where are you from, and what do you like doing in your free time?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp1" onclick="toggleRecording('sp1')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp1"></i>
+                            <span id="text-rec-sp1">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp1')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp1" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp1" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Speaking 2 (A2 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking A2</span>
+                        <span id="speaking-status-sp2" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">23. Prompt A2: "Tell me about your last vacation or a memorable weekend. Where did you go and what did you do?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp2" onclick="toggleRecording('sp2')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp2"></i>
+                            <span id="text-rec-sp2">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp2')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp2" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp2" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Speaking 3 (B1 Prompt) -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">Speaking B1</span>
+                        <span id="speaking-status-sp3" class="text-xs text-slate-400 font-medium">Listo para responder</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">24. Prompt B1: "In your opinion, is working/studying from home better than going to an office/classroom? What would you do if you could choose?"</p>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" id="btn-rec-sp3" onclick="toggleRecording('sp3')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-microphone" id="icon-rec-sp3"></i>
+                            <span id="text-rec-sp3">Grabar / Probar Voz</span>
+                        </button>
+                        <button type="button" onclick="clearSpeaking('sp3')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+                        </button>
+                        <span id="timer-sp3" class="text-xs font-mono font-bold text-slate-500 ml-auto">00:00</span>
+                    </div>
+
+                    <textarea id="text-sp3" rows="3" oninput="updateProgress()" placeholder="Escribe aquí tu respuesta en inglés o usa la voz si tu navegador lo permite..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-700 bg-white"></textarea>
+                </div>
+
+                <!-- Botón Calificar -->
+                <div class="pt-6 border-t border-slate-200 flex justify-end">
+                    <button type="button" onclick="submitExam()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl transition duration-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-square-check"></i>
+                        <span>Calificar Examen Completo</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- PANTALLA 3: RESULTADOS Y RETROALIMENTACIÓN -->
+        <section id="screen-results" class="hidden fade-in space-y-8 my-6">
+            
+            <!-- Tarjeta Principal de Nivel -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 text-center space-y-4">
+                <div class="inline-flex bg-indigo-50 text-indigo-600 p-4 rounded-full">
+                    <i class="fa-solid fa-medal text-4xl" id="result-icon"></i>
+                </div>
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Resultado Oficial para <strong id="res-username" class="text-slate-700">Estudiante</strong></span>
+                    <h2 class="text-4xl font-extrabold text-slate-900 mt-1" id="res-level-title">Nivel A2: Elemental</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 max-w-2xl mx-auto">
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Listening + Written</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-written-score">0 / 21</span>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Speaking Score</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-speaking-score">0 / 9</span>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 block">Total Global</span>
+                        <span class="text-lg font-bold text-indigo-600" id="res-total-score">0 / 30</span>
+                    </div>
+                </div>
+                <p id="res-description" class="text-slate-600 max-w-lg mx-auto text-sm leading-relaxed">
+                    Descripción del nivel del alumno...
+                </p>
+                <div class="pt-4 flex justify-center space-x-4">
+                    <button onclick="resetExam()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-6 rounded-xl transition text-sm">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Realizar Otro Test
+                    </button>
+                    <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl transition text-sm shadow-sm">
+                        <i class="fa-solid fa-print mr-1.5"></i> Imprimir / Guardar Reporte
+                    </button>
+                </div>
+            </div>
+
+            <!-- Desglose de Speaking -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-4">
+                <h3 class="font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">Análisis de Producción Oral (Speaking)</h3>
+                <div id="speaking-analysis-container" class="space-y-4">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <!-- Desglose de Respuestas y Feedback -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <h3 class="font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">Desglose Detallado y Retroalimentación (Listening & Written)</h3>
+                <div id="feedback-container" class="space-y-4">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400">
+        <p>Plataforma de Diagnóstico de Inglés &bull; Basada en Estándares MCER (A1, A2, B1)</p>
+    </footer>
+
+    <!-- JavaScript para interactividad, dictado por voz y calificación -->
+    <script>
+        let studentName = "";
+        let isMicVerified = false;
+        let testRecognition = null;
+        let activeRecognition = null;
+        let activePromptId = null;
+
+        // Estado para grabaciones de Speaking
+        const speechState = {
+            sp1: { recording: false, seconds: 0, timer: null, baseText: '', finalTranscript: '' },
+            sp2: { recording: false, seconds: 0, timer: null, baseText: '', finalTranscript: '' },
+            sp3: { recording: false, seconds: 0, timer: null, baseText: '', finalTranscript: '' }
+        };
+
+        // Clave de respuestas oficiales
+        const answerKey = {
+            q1: 'b', q2: 'c', q3: 'b',
+            q4: 'b', q5: 'b', q6: 'b',
+            q7: 'b', q8: 'a', q9: 'a',
+            q10: 'b', q11: 'a', q12: 'b', q13: 'b',
+            q14: 'a', q15: 'b', q16: 'b', q17: 'c',
+            q18: 'b', q19: 'a', q20: 'b', q21: 'b',
+            q22: 'b', q23: 'b', q24: 'c'
+        };
+
+        // Metadatos y explicaciones pedagógicas
+        // Metadatos duplicados eliminados: se conserva la definición completa siguiente.
+
+
+
+        // Metadatos y explicaciones pedagógicas
+        const questionsMeta = {
+            q1: { text: "Where does Marco live?", level: "A1", explanation: "Marco afirma: 'I live in a small apartment in Rome'." },
+            q2: { text: "How does he go to work?", level: "A1", explanation: "Menciona: '...go to work by bus'." },
+            q3: { text: "Why did they leave the beach?", level: "A2", explanation: "Indica: '...it started raining heavily, so they decided to go to a cafe'." },
+            q4: { text: "What did they do after leaving?", level: "A2", explanation: "Afirma: '...order hot chocolate instead'." },
+            q5: { text: "Why prefer traditional classrooms?", level: "B1", explanation: "Se señala: 'face-to-face interaction... helps them stay motivated'." },
+            q6: { text: "Main advantage of remote courses?", level: "B1", explanation: "Menciona: 'remote courses offer flexibility for people who work full-time'." },
+            q7: { text: "My sister ______ like coffee...", level: "A1", explanation: "Tercera persona del singular en presente simple negativo: 'doesn't'." },
+            q8: { text: "Where ______ you yesterday...?", level: "A1", explanation: "Pasado simple del verbo To Be para 'you': 'were'." },
+            q9: { text: "There ______ three apples...", level: "A1", explanation: "Estructura 'There are' para sustantivos contables en plural." },
+            q10: { text: "Look! The dog ______ in the garden...", level: "A1", explanation: "Acción en progreso ('right now') usa Present Continuous: 'is running'." },
+            q11: { text: "If it ______ tomorrow...", level: "A2", explanation: "Primer condicional: Cláusula con 'if' usa Present Simple ('doesn't rain')." },
+            q12: { text: "She has lived in this city ______ 2018.", level: "A2", explanation: "Present Perfect con un punto específico en el tiempo requiere 'since'." },
+            q13: { text: "This book is much ______ than...", level: "A2", explanation: "Comparativo de adjetivo largo ('interesting') requiere 'more interesting'." },
+            q14: { text: "While I ______ dinner, the phone rang.", level: "A2", explanation: "Acción continua en el pasado interrumpida usa Past Continuous ('was cooking')." },
+            q15: { text: "I'm not used to ______ up early...", level: "B1", explanation: "La estructura 'be used to' requiere verbo en gerundio ('getting')." },
+            q16: { text: "The new project ______ by the team...", level: "B1", explanation: "Voz pasiva en pasado simple: 'was completed'." },
+            q17: { text: "You ______ bring an umbrella...", level: "B1", explanation: "Ausencia de obligación usa 'don't have to'." },
+            q18: { text: "If I had more free time, I ______...", level: "B1", explanation: "Segundo condicional (situación hipotética): requiere 'would learn'." },
+            q19: { text: "Benefit of remote work?", level: "A2-B1", explanation: "El texto indica que elimina el tiempo de traslado ('eliminates commuting time')." },
+            q20: { text: "Difficulty faced by remote workers?", level: "B1", explanation: "Se menciona la dificultad para desconectarse al final del día." },
+            q21: { text: "What must companies do?", level: "B1", explanation: "El texto concluye que deben buscar formas creativas para fomentar la colaboración." }
+        };
+
+        // Solicitar permisos de micrófono en pantalla de bienvenida
+        function requestMicPermission() {
+            testMicrophoneInWelcome();
+        }
+
+        // Prueba obligatoria de micrófono en la pantalla de bienvenida
+        async function testMicrophoneInWelcome() {
+            const statusEl = document.getElementById('mic-check-status');
+            const btnText = document.getElementById('text-check-mic');
+            const btnIcon = document.getElementById('icon-check-mic');
+            const previewEl = document.getElementById('mic-test-preview');
+            const btn = document.getElementById('btn-check-mic');
+
+            if (!statusEl || !btnText || !btnIcon || !previewEl) {
+                console.error('No se encontraron los elementos de verificación del micrófono.');
+                return;
+            }
+
+            if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                statusEl.textContent = 'Acceso no disponible';
+                statusEl.className = 'text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200';
+                previewEl.classList.remove('hidden');
+                previewEl.textContent = 'El navegador no permite solicitar el micrófono en este contexto. Abre el examen directamente en su enlace publicado (no dentro de Google Sites) y usa HTTPS.';
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            btnText.textContent = 'Solicitando permiso...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+            statusEl.textContent = 'Esperando permiso';
+            statusEl.className = 'text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200';
+            previewEl.classList.remove('hidden');
+            previewEl.textContent = 'Si Edge muestra una solicitud de permiso, selecciona «Permitir».';
+
+            try {
+                // Esta llamada solicita el permiso real del dispositivo; SpeechRecognition por sí solo
+                // no permite distinguir con fiabilidad entre permiso, dispositivo y errores del servicio.
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+
+                markMicAsVerified();
+
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    previewEl.textContent = 'Micrófono autorizado correctamente. Este navegador no ofrece transcripción automática; puedes continuar y escribir las respuestas de Speaking.';
+                    return;
+                }
+
+                try {
+                    if (testRecognition) {
+                        try { testRecognition.abort(); } catch (e) {}
+                    }
+
+                    testRecognition = new SpeechRecognition();
+                    testRecognition.lang = 'en-US';
+                    testRecognition.continuous = false;
+                    testRecognition.interimResults = true;
+
+                    testRecognition.onstart = function() {
+                        statusEl.textContent = 'Micrófono activo';
+                        btnText.textContent = 'Escuchando... habla ahora';
+                        btnIcon.className = 'fa-solid fa-microphone-lines text-indigo-600 animate-pulse';
+                        previewEl.textContent = "Di algo en inglés, por ejemplo: 'Hello, my name is...'";
+                    };
+
+                    testRecognition.onresult = function(event) {
+                        let transcript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            transcript += event.results[i][0].transcript;
+                        }
+                        if (transcript.trim()) {
+                            previewEl.textContent = 'Voz detectada: "' + transcript.trim() + '"';
+                            markMicAsVerified();
+                            btnText.textContent = 'Micrófono verificado';
+                            btnIcon.className = 'fa-solid fa-circle-check text-emerald-600';
+                        }
+                    };
+
+                    testRecognition.onerror = function(event) {
+                        console.warn('Speech recognition test error:', event.error);
+                        // El acceso al dispositivo ya fue probado con getUserMedia.
+                        statusEl.textContent = 'Micrófono autorizado';
+                        statusEl.className = 'text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200';
+                        previewEl.textContent = 'El dispositivo y el permiso funcionan. La transcripción automática no respondió (' + event.error + '). Si Speaking no transcribe dentro de Google Sites, abre el examen en una pestaña nueva mediante su enlace directo.';
+                        btnText.textContent = 'Micrófono verificado';
+                        btnIcon.className = 'fa-solid fa-circle-check text-emerald-600';
+                    };
+
+                    testRecognition.onend = function() {
+                        if (btn) btn.disabled = false;
+                        if (isMicVerified) {
+                            btnText.textContent = 'Volver a probar micrófono';
+                            btnIcon.className = 'fa-solid fa-microphone';
+                        }
+                    };
+
+                    testRecognition.start();
+                } catch (recognitionError) {
+                    console.warn('No se pudo iniciar la transcripción:', recognitionError);
+                    statusEl.textContent = 'Micrófono autorizado';
+                    statusEl.className = 'text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200';
+                    previewEl.textContent = 'El micrófono está autorizado. No se pudo iniciar la transcripción automática desde este marco. Prueba el enlace directo del examen.';
+                    if (btn) btn.disabled = false;
+                    btnText.textContent = 'Volver a probar micrófono';
+                    btnIcon.className = 'fa-solid fa-microphone';
+                }
+            } catch (err) {
+                console.error('Error al solicitar el micrófono:', err);
+                const messages = {
+                    NotAllowedError: 'Edge o Google Sites bloqueó el permiso. En Edge, permite Micrófono para el sitio. Si sigue igual, abre el examen en una pestaña nueva con su enlace directo.',
+                    PermissionDeniedError: 'El permiso del micrófono fue denegado. Activa Micrófono en los permisos del sitio de Edge.',
+                    NotFoundError: 'No se encontró ningún micrófono conectado o habilitado.',
+                    NotReadableError: 'El micrófono está ocupado por otra aplicación. Cierra otras aplicaciones que lo estén usando y vuelve a intentar.',
+                    SecurityError: 'El contexto de Google Sites no permite acceder al micrófono. Abre el examen directamente en una pestaña nueva.',
+                    AbortError: 'El navegador interrumpió el acceso al micrófono. Vuelve a intentarlo.'
+                };
+                statusEl.textContent = 'No se pudo activar';
+                statusEl.className = 'text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200';
+                previewEl.classList.remove('hidden');
+                previewEl.textContent = messages[err.name] || ('No se pudo acceder al micrófono (' + (err.name || 'Error') + '). Revisa los permisos de Edge y vuelve a intentar.');
+                if (btn) btn.disabled = false;
+                btnText.textContent = 'Reintentar activar micrófono';
+                btnIcon.className = 'fa-solid fa-microphone';
+            }
+        }
+
+        function markMicAsVerified() {
+            isMicVerified = true;
+            const statusEl = document.getElementById('mic-check-status');
+            const btnText = document.getElementById('text-check-mic');
+            const btnIcon = document.getElementById('icon-check-mic');
+            const submitBtn = document.getElementById('btn-start-exam');
+            const disabledNote = document.getElementById('start-disabled-note');
+
+            statusEl.textContent = "✓ Micrófono Activado";
+            statusEl.className = "text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200";
+            
+            btnText.textContent = "Micrófono Verificado";
+            btnIcon.className = "fa-solid fa-circle-check text-emerald-600";
+
+            submitBtn.disabled = false;
+            submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200 shadow-sm flex items-center justify-center space-x-2 cursor-pointer";
+            
+            if (disabledNote) {
+                disabledNote.textContent = "✓ Verificación completada. Ya puedes iniciar el examen.";
+                disabledNote.className = "text-center text-[11px] text-emerald-600 font-medium";
+            }
+        }
+
+        // Formulario de bienvenida
+        document.getElementById('welcome-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!isMicVerified) {
+                alert("Por favor haz clic en 'Activar y Probar Micrófono' antes de comenzar el examen.");
+                return;
+            }
+
+            const inputVal = document.getElementById('username').value.trim();
+            if(!inputVal) return;
+            studentName = inputVal;
+
+            document.getElementById('display-username').textContent = studentName;
+            document.getElementById('res-username').textContent = studentName;
+
+            // Transición de pantallas
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-exam').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Actualizar barra de progreso
+        function updateProgress() {
+            let answered = 0;
+            const total = 27; // 24 escritas + 3 speaking
+            for(let i = 1; i <= 24; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for(let r of radios) {
+                    if(r.checked) {
+                        answered++;
+                        break;
+                    }
+                }
+            }
+            if(document.getElementById('text-sp1').value.trim().length > 0) answered++;
+            if(document.getElementById('text-sp2').value.trim().length > 0) answered++;
+            if(document.getElementById('text-sp3').value.trim().length > 0) answered++;
+
+            const percent = Math.round((answered / total) * 100);
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `${answered} / ${total} respondidas`;
+        }
+
+        // Mostrar / Ocultar transcripciones
+        function toggleTranscript(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // Simulación de reproductor de audio con síntesis de voz (SpeechSynthesis)
+        function playAudioSimulation(audioId) {
+            const texts = {
+                audio1: "Hello! My name is Marco. I am 25 years old and I live in a small apartment in Rome. On weekdays, I get up at 7:00 AM, drink coffee, and go to work by bus. In my free time, I like playing football and reading books.",
+                audio2: "Last weekend, Sarah went to the beach with her friends. The weather was warm and sunny, so they spent most of the day swimming in the ocean. However, in the afternoon, it started raining heavily, so they decided to go to a cafe and order hot chocolate instead.",
+                audio3: "Although online learning has become increasingly popular over the last few years, many students still prefer traditional classroom environments. They argue that face-to-face interaction with teachers and classmates helps them stay motivated. On the other hand, remote courses offer flexibility for people who work full-time."
+            };
+
+            const btnText = document.getElementById(`text-${audioId}`);
+            const btnIcon = document.getElementById(`icon-${audioId}`);
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(texts[audioId]);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+
+                utterance.onstart = () => {
+                    btnText.textContent = "Reproduciendo...";
+                    btnIcon.className = "fa-solid fa-volume-high animate-pulse";
+                };
+
+                utterance.onend = () => {
+                    btnText.textContent = "Escuchar de nuevo";
+                    btnIcon.className = "fa-solid fa-play";
+                };
+
+                utterance.onerror = () => {
+                    btnText.textContent = "Escuchar Audio";
+                    btnIcon.className = "fa-solid fa-play";
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tu navegador no soporta la reproducción de audio simulado, por favor usa la transcripción escrita.");
+            }
+        }
+
+        // CONTROLADOR DE RECONOCIMIENTO DE VOZ (SPEAKING FIX)
+        function toggleRecording(promptId) {
+            const textarea = document.getElementById(`text-${promptId}`);
+            const statusEl = document.getElementById(`speaking-status-${promptId}`);
+            const btnRec = document.getElementById(`btn-rec-${promptId}`);
+            const iconRec = document.getElementById(`icon-rec-${promptId}`);
+            const textRec = document.getElementById(`text-rec-${promptId}`);
+
+            const state = speechState[promptId];
+
+            if (state.recording) {
+                stopRecording(promptId);
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                showSpeechErrorMessage(statusEl, "Reconocimiento de voz no soportado por el navegador. Puedes ingresar tu respuesta por escrito.");
+                return;
+            }
+
+            try {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                activeRecognition = recognition;
+                activePromptId = promptId;
+
+                state.baseText = textarea.value;
+                state.finalTranscript = '';
+
+                recognition.onstart = function() {
+                    state.recording = true;
+                    statusEl.textContent = "Grabando...";
+                    statusEl.className = "text-xs text-rose-600 font-semibold animate-pulse";
+                    btnRec.className = "bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm";
+                    iconRec.className = "fa-solid fa-square";
+                    textRec.textContent = "Detener Grabación";
+
+                    state.timer = setInterval(() => {
+                        state.seconds++;
+                        const mins = String(Math.floor(state.seconds / 60)).padStart(2, '0');
+                        const secs = String(state.seconds % 60).padStart(2, '0');
+                        document.getElementById(`timer-${promptId}`).textContent = `${mins}:${secs}`;
+                    }, 1000);
+                };
+
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            state.finalTranscript += event.results[i][0].transcript + ' ';
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    const base = state.baseText ? state.baseText.trim() + ' ' : '';
+                    textarea.value = (base + state.finalTranscript + interimTranscript).trim();
+                    updateProgress();
+                };
+
+                recognition.onerror = function(event) {
+                    console.warn("Speech recognition error:", event.error);
+                    const reasons = {
+                        "not-allowed": "Edge o Google Sites bloqueó el micrófono. Permite el micrófono en Edge o abre el examen con su enlace directo en una pestaña nueva.",
+                        "service-not-allowed": "El servicio de reconocimiento de voz no está permitido dentro de este marco. Abre el examen directamente en una pestaña nueva.",
+                        "audio-capture": "No se pudo capturar audio. Comprueba que el micrófono esté conectado y que ninguna otra aplicación lo esté usando.",
+                        "no-speech": "No se detectó voz. Comprueba el micrófono e inténtalo nuevamente.",
+                        network: "El servicio de reconocimiento de voz no está disponible por un problema de red."
+                    };
+                    showSpeechErrorMessage(statusEl, reasons[event.error] || ("No se pudo reconocer la voz (" + event.error + "). Puedes escribir la respuesta en el recuadro."));
+                    stopRecording(promptId);
+                };
+
+                recognition.onend = function() {
+                    stopRecording(promptId);
+                };
+
+                recognition.start();
+
+            } catch (err) {
+                console.error("Speech Recognition Exception:", err);
+                showSpeechErrorMessage(statusEl, "Micrófono restringido por iframe. Ingresa la respuesta por escrito.");
+                stopRecording(promptId);
+            }
+        }
+
+        function stopRecording(promptId) {
+            const state = speechState[promptId];
+            if (activeRecognition && activePromptId === promptId) {
+                const rec = activeRecognition;
+                activeRecognition = null;
+                activePromptId = null;
+                try { rec.stop(); } catch(e) {}
+            }
+
+            if (state.timer) {
+                clearInterval(state.timer);
+                state.timer = null;
+            }
+
+            state.recording = false;
+
+            const statusEl = document.getElementById(`speaking-status-${promptId}`);
+            const btnRec = document.getElementById(`btn-rec-${promptId}`);
+            const iconRec = document.getElementById(`icon-rec-${promptId}`);
+            const textRec = document.getElementById(`text-rec-${promptId}`);
+
+            if (statusEl && !statusEl.classList.contains('text-rose-600')) {
+                statusEl.textContent = "Grabación guardada";
+                statusEl.className = "text-xs text-emerald-600 font-semibold";
+            }
+
+            if (btnRec) {
+                btnRec.className = "bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm";
+                iconRec.className = "fa-solid fa-microphone";
+                textRec.textContent = "Iniciar Grabación";
+            }
+        }
+
+        function clearSpeaking(promptId) {
+            stopRecording(promptId);
+            const state = speechState[promptId];
+            state.seconds = 0;
+            state.baseText = '';
+            state.finalTranscript = '';
+            document.getElementById(`text-${promptId}`).value = '';
+            document.getElementById(`timer-${promptId}`).textContent = '00:00';
+            const statusEl = document.getElementById(`speaking-status-${promptId}`);
+            statusEl.textContent = "Listo para grabar";
+            statusEl.className = "text-xs text-slate-400 font-medium";
+            updateProgress();
+        }
+
+        function showSpeechErrorMessage(statusEl, text) {
+            if (!statusEl) return;
+            statusEl.textContent = text;
+            statusEl.className = "text-xs text-rose-600 font-medium block mt-1";
+        }
+
+        // Calificar Examen
+        function submitExam() {
+            // Asegurar detener grabaciones pendientes
+            ['sp1', 'sp2', 'sp3'].forEach(id => {
+                if (speechState[id].recording) stopRecording(id);
+            });
+
+            let scoreWritten = 0;
+            const totalWritten = 24;
+            let userAnswers = {};
+
+            for(let i = 1; i <= totalWritten; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                let val = null;
+                for(let r of radios) {
+                    if(r.checked) {
+                        val = r.value;
+                        break;
+                    }
+                }
+                userAnswers[`q${i}`] = val;
+                if(val === answerKey[`q${i}`]) {
+                    scoreWritten++;
+                }
+            }
+
+            // Evaluación de Speaking (Hasta 3 pts por prompt, total 9 pts)
+            const speakingTexts = {
+                sp1: document.getElementById('text-sp1').value.trim(),
+                sp2: document.getElementById('text-sp2').value.trim(),
+                sp3: document.getElementById('text-sp3').value.trim()
+            };
+
+            const speakingAnalysis = analyzeSpeaking(speakingTexts);
+            const totalScore = scoreWritten + speakingAnalysis.totalScore; // Max 33 pts
+
+            // Determinar Nivel Global CEFR
+            let levelTitle = "Nivel A1: Principiante / Acceso";
+            let levelDesc = "Maneja estructuras básicas en presente, vocabulario cotidiano simple y frases cortas. Presenta dificultades con tiempos pasados, oraciones complejas e improvisación oral.";
+            let iconClass = "fa-seedling";
+
+            if (totalScore >= 13 && totalScore <= 24) {
+                levelTitle = "Nivel A2: Elemental / Plataforma";
+                levelDesc = "Utiliza correctamente tiempos en pasado, comparativos y condicionales básicos. Comprende textos breves y se expresa oralmente en rutinas cotidianas.";
+                iconClass = "fa-ranking-star";
+            } else if (totalScore >= 25) {
+                levelTitle = "Nivel B1: Intermedio / Umbral";
+                levelDesc = "Domina la voz pasiva, segundo condicional, gerundios y modales. Se expresa oralmente con fluidez continua y conecta opiniones de forma coherente.";
+                iconClass = "fa-award";
+            }
+
+            // Actualizar vista de resultados
+            document.getElementById('res-level-title').textContent = levelTitle;
+            document.getElementById('res-written-score').textContent = `${scoreWritten} / ${totalWritten}`;
+            document.getElementById('res-speaking-score').textContent = `${speakingAnalysis.totalScore} / 9 pts`;
+            document.getElementById('res-total-score').textContent = `${totalScore} / 33 pts`;
+            document.getElementById('res-description').textContent = levelDesc;
+            document.getElementById('result-icon').className = `fa-solid ${iconClass} text-4xl text-indigo-600`;
+
+            // Mostrar análisis de Speaking
+            renderSpeakingAnalysis(speakingTexts, speakingAnalysis);
+
+            // Generar contenedor de retroalimentación de Listening & Written
+            const feedbackContainer = document.getElementById('feedback-container');
+            feedbackContainer.innerHTML = "";
+
+            for(let i = 1; i <= totalWritten; i++) {
+                const uAns = userAnswers[`q${i}`];
+                const cAns = answerKey[`q${i}`];
+                const meta = questionsMeta[`q${i}`];
+                const isCorrect = (uAns === cAns);
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'} space-y-1.5`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${isCorrect ? 'Correcta (+1)' : 'Incorrecta (0)'}
+                        </span>
+                        <span class="text-xs font-semibold text-slate-400">Pregunta ${i} [${meta.level}]</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-800">${meta.text}</p>
+                    <div class="text-xs flex gap-4 mt-1">
+                        <span class="text-slate-600">Tu respuesta: <strong class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${uAns ? uAns.toUpperCase() : 'Sin responder'}</strong></span>
+                        <span class="text-slate-600">Respuesta correcta: <strong class="text-emerald-700">${cAns.toUpperCase()}</strong></span>
+                    </div>
+                    <p class="text-xs text-slate-500 italic mt-1 bg-white p-2 rounded border border-slate-100">
+                        <span class="font-semibold not-italic text-slate-700">Explicación:</span> ${meta.explanation}
+                    </p>
+                `;
+                feedbackContainer.appendChild(card);
+            }
+
+            // Cambiar pantalla activa
+            document.getElementById('screen-exam').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Análisis lingüístico de Speaking en Inglés
+        function analyzeSpeaking(texts) {
+            let detail = { 
+                sp1: { score: 0, feedback: [], status: "Nivel A1" }, 
+                sp2: { score: 0, feedback: [], status: "Nivel A2" }, 
+                sp3: { score: 0, feedback: [], status: "Nivel B1" }, 
+                totalScore: 0 
+            };
+
+            // Common Spanish-English translation mistakes / grammar issues
+            const commonErrors = [
+                { pattern: /\bI have \d+ years\b/i, error: 'Uso incorrecto de "I have [X] years". En inglés se debe usar "I am [X] years old".' },
+                { pattern: /\bi am agree\b/i, error: 'Error sintáctico "I am agree". Lo correcto es "I agree".' },
+                { pattern: /\bpeople is\b/i, error: 'Error de concordancia "People is". "People" es plural, usa "People are".' },
+                { pattern: /\bmore better\b/i, error: 'Redundancia comparativa "more better". Usa únicamente "better".' },
+                { pattern: /\bdon't has\b/i, error: 'Error de sujeto y auxiliar "don\'t has". Usa "doesn\'t have".' },
+                { pattern: /\bhe like\b/i, error: 'Falta la "s" de tercera persona en presente "he like". Usa "he likes".' },
+                { pattern: /\bshe like\b/i, error: 'Falta la "s" de tercera persona en presente "she like". Usa "she likes".' },
+                { pattern: /\bi go to the home\b/i, error: 'Uso innecesario de artículo/preposición. Se dice "I go home".' }
+            ];
+
+            // 1. EVALUAR PROMPT A1 (Presentación personal)
+            const text1 = texts.sp1;
+            const words1 = text1.split(/\s+/).filter(w => w.length > 0);
+            let score1 = 0;
+
+            if (words1.length === 0) {
+                detail.sp1.feedback.push("Sin respuesta registrada.");
+            } else {
+                if (words1.length < 5) {
+                    detail.sp1.feedback.push("Respuesta demasiado breve para nivel A1 (menos de 5 palabras).");
+                } else {
+                    score1 += 1; // Longitud básica adecuada
+                }
+
+                const hasName = /\b(my name is|i am|i'm)\b/i.test(text1);
+                const hasOrigin = /\b(from|live in|i live)\b/i.test(text1);
+                const hasHobby = /\b(like|love|enjoy|play|read|listen)\b/i.test(text1);
+
+                if (hasName && (hasOrigin || hasHobby)) {
+                    score1 += 1;
+                } else {
+                    detail.sp1.feedback.push("Falta incluir información personal requerida (nombre, origen o aficiones).");
+                }
+
+                // Revisar errores comunes
+                commonErrors.forEach(item => {
+                    if (item.pattern.test(text1)) {
+                        detail.sp1.feedback.push(item.error);
+                        score1 = Math.max(0, score1 - 1);
+                    }
+                });
+
+                if (score1 >= 2 && words1.length >= 8 && detail.sp1.feedback.length === 0) {
+                    score1 = 3;
+                    detail.sp1.feedback.push("Buena respuesta de presentación A1 sin errores gramaticales detectados.");
+                }
+            }
+            detail.sp1.score = Math.min(3, score1);
+
+            // 2. EVALUAR PROMPT A2 (Narración de eventos pasados)
+            const text2 = texts.sp2;
+            const words2 = text2.split(/\s+/).filter(w => w.length > 0);
+            let score2 = 0;
+
+            if (words2.length === 0) {
+                detail.sp2.feedback.push("Sin respuesta registrada.");
+            } else {
+                if (words2.length < 6) {
+                    detail.sp2.feedback.push("Respuesta demasiado corta para narrar una experiencia en pasado.");
+                } else {
+                    score2 += 1;
+                }
+
+                const pastVerbs = /\b(went|was|were|visited|had|enjoyed|stayed|traveled|swam|bought|saw|ate|played|took)\b/i;
+                if (pastVerbs.test(text2)) {
+                    score2 += 1;
+                } else {
+                    detail.sp2.feedback.push("No se detectaron verbos en pasado simple (ex. went, stayed, visited, was). Necesarios para nivel A2.");
+                }
+
+                // Detectar si habla únicamente en presente cuando debe ser pasado
+                const presentOnly = /\b(go to|visit|stay at|i play|i enjoy)\b/i;
+                if (presentOnly.test(text2) && !pastVerbs.test(text2)) {
+                    detail.sp2.feedback.push("Atención: Usaste verbos en presente al responder sobre unas vacaciones pasadas.");
+                }
+
+                commonErrors.forEach(item => {
+                    if (item.pattern.test(text2)) {
+                        detail.sp2.feedback.push(item.error);
+                        score2 = Math.max(0, score2 - 1);
+                    }
+                });
+
+                if (score2 >= 2 && words2.length >= 10 && detail.sp2.feedback.length === 0) {
+                    score2 = 3;
+                    detail.sp2.feedback.push("Uso correcto de tiempos en pasado y narración fluida en A2.");
+                }
+            }
+            detail.sp2.score = Math.min(3, score2);
+
+            // 3. EVALUAR PROMPT B1 (Argumentación y Condicionales)
+            const text3 = texts.sp3;
+            const words3 = text3.split(/\s+/).filter(w => w.length > 0);
+            let score3 = 0;
+
+            if (words3.length === 0) {
+                detail.sp3.feedback.push("Sin respuesta registrada.");
+            } else {
+                if (words3.length < 8) {
+                    detail.sp3.feedback.push("Respuesta insuficiente para exponer una opinión argumentada de nivel B1.");
+                } else {
+                    score3 += 1;
+                }
+
+                const opinionConnectors = /\b(in my opinion|i think|i believe|because|prefer|however|on the other hand|in contrast)\b/i;
+                const conditionalMarkers = /\b(if i could|i would|would choose|i would prefer|if i had)\b/i;
+
+                if (opinionConnectors.test(text3)) {
+                    score3 += 1;
+                } else {
+                    detail.sp3.feedback.push("Faltan conectores de opinión o contraste (ex. in my opinion, I think, because, however).");
+                }
+
+                if (conditionalMarkers.test(text3)) {
+                    if (score3 < 3) score3 += 1;
+                } else {
+                    detail.sp3.feedback.push("No utilizaste estructuras condicionales/hipotéticas (ex. 'If I could, I would...') requeridas para el nivel B1.");
+                }
+
+                commonErrors.forEach(item => {
+                    if (item.pattern.test(text3)) {
+                        detail.sp3.feedback.push(item.error);
+                        score3 = Math.max(0, score3 - 1);
+                    }
+                });
+
+                if (score3 >= 2 && words3.length >= 12 && opinionConnectors.test(text3) && detail.sp3.feedback.length === 0) {
+                    score3 = 3;
+                    detail.sp3.feedback.push("Excelente argumentación B1 con buen uso de vocabulario y estructuras complejas.");
+                }
+            }
+            detail.sp3.score = Math.min(3, score3);
+
+            detail.totalScore = detail.sp1.score + detail.sp2.score + detail.sp3.score;
+            return detail;
+        }
+
+        function renderSpeakingAnalysis(texts, analysis) {
+            const container = document.getElementById('speaking-analysis-container');
+            
+            function buildFeedbackList(items) {
+                if (!items || items.length === 0) return '<p class="text-xs text-slate-500 italic">Sin observaciones adicionales.</p>';
+                return items.map(fb => `<li class="text-xs text-slate-700 flex items-start space-x-1.5"><i class="fa-solid fa-circle-exclamation text-amber-500 mt-0.5 text-[10px]"></i><span>${fb}</span></li>`).join('');
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Prompt A1</span>
+                            <span class="text-xs font-bold ${analysis.sp1.score > 1 ? 'text-emerald-700' : 'text-amber-600'}">${analysis.sp1.score} / 3 pts</span>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">Transcripción:</span>
+                            <p class="text-xs text-slate-600 italic border-l-2 border-slate-300 pl-2 mt-0.5">
+                                "${texts.sp1 || 'Sin respuesta'}"
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200">
+                            <span class="text-[11px] font-semibold text-slate-700 block mb-1">Correcciones y Feedback en Inglés:</span>
+                            <ul class="space-y-1">
+                                ${buildFeedbackList(analysis.sp1.feedback)}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded">Prompt A2</span>
+                            <span class="text-xs font-bold ${analysis.sp2.score > 1 ? 'text-blue-700' : 'text-amber-600'}">${analysis.sp2.score} / 3 pts</span>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">Transcripción:</span>
+                            <p class="text-xs text-slate-600 italic border-l-2 border-slate-300 pl-2 mt-0.5">
+                                "${texts.sp2 || 'Sin respuesta'}"
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200">
+                            <span class="text-[11px] font-semibold text-slate-700 block mb-1">Correcciones y Feedback en Inglés:</span>
+                            <ul class="space-y-1">
+                                ${buildFeedbackList(analysis.sp2.feedback)}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Prompt B1</span>
+                            <span class="text-xs font-bold ${analysis.sp3.score > 1 ? 'text-amber-700' : 'text-amber-600'}">${analysis.sp3.score} / 3 pts</span>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">Transcripción:</span>
+                            <p class="text-xs text-slate-600 italic border-l-2 border-slate-300 pl-2 mt-0.5">
+                                "${texts.sp3 || 'Sin respuesta'}"
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200">
+                            <span class="text-[11px] font-semibold text-slate-700 block mb-1">Correcciones y Feedback en Inglés:</span>
+                            <ul class="space-y-1">
+                                ${buildFeedbackList(analysis.sp3.feedback)}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Reiniciar examen
+        function resetExam() {
+            document.getElementById('welcome-form').reset();
+            isMicVerified = false;
+            
+            const statusEl = document.getElementById('mic-check-status');
+            statusEl.textContent = "No verificado";
+            statusEl.className = "text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200";
+
+            const btnText = document.getElementById('text-check-mic');
+            btnText.textContent = "Activar y Probar Micrófono";
+            const btnIcon = document.getElementById('icon-check-mic');
+            btnIcon.className = "fa-solid fa-microphone";
+
+            const submitBtn = document.getElementById('btn-start-exam');
+            submitBtn.disabled = true;
+            submitBtn.className = "w-full bg-slate-300 text-slate-500 cursor-not-allowed font-semibold py-3 px-6 rounded-xl transition duration-200 flex items-center justify-center space-x-2";
+
+            const disabledNote = document.getElementById('start-disabled-note');
+            if (disabledNote) {
+                disabledNote.textContent = "* Debes probar y activar el micrófono para desbloquear el botón de inicio.";
+                disabledNote.className = "text-center text-[11px] text-amber-600 font-medium";
+            }
+
+            document.getElementById('mic-test-preview').classList.add('hidden');
+            
+            // Limpiar inputs radios y speaking
+            for(let i = 1; i <= 24; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for(let r of radios) r.checked = false;
+            }
+            ['sp1', 'sp2', 'sp3'].forEach(clearSpeaking);
+
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('progress-text').textContent = '0 / 27 respondidas';
+
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
